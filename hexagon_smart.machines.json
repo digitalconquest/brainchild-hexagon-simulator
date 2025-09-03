@@ -1,0 +1,136 @@
+[{
+  "_id": {
+    "$oid": "68b7465efe2e6e4859943f63"
+  },
+  "model": {
+    "$oid": "68b74580fe2e6e4859943f58"
+  },
+  "deviceId": "12345",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:32:46.684Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:32:46.684Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b7466efe2e6e4859943f67"
+  },
+  "model": {
+    "$oid": "68b74580fe2e6e4859943f58"
+  },
+  "deviceId": "12346",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:33:02.110Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:33:02.110Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b74674fe2e6e4859943f69"
+  },
+  "model": {
+    "$oid": "68b74580fe2e6e4859943f58"
+  },
+  "deviceId": "12347",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:33:08.560Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:33:08.560Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b74685fe2e6e4859943f6b"
+  },
+  "model": {
+    "$oid": "68b745ccfe2e6e4859943f5c"
+  },
+  "deviceId": "23456",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:33:25.676Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:33:25.676Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b7468efe2e6e4859943f6d"
+  },
+  "model": {
+    "$oid": "68b745ccfe2e6e4859943f5c"
+  },
+  "deviceId": "23457",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:33:34.899Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:33:34.899Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b7469efe2e6e4859943f71"
+  },
+  "model": {
+    "$oid": "68b745fcfe2e6e4859943f5e"
+  },
+  "deviceId": "34567",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:33:50.152Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:33:50.152Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b746a8fe2e6e4859943f73"
+  },
+  "model": {
+    "$oid": "68b745fcfe2e6e4859943f5e"
+  },
+  "deviceId": "34568",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:34:00.424Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:34:00.424Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b746b0fe2e6e4859943f77"
+  },
+  "model": {
+    "$oid": "68b745fcfe2e6e4859943f5e"
+  },
+  "deviceId": "34569",
+  "active": true,
+  "createdAt": {
+    "$date": "2025-09-02T19:34:08.786Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:34:08.786Z"
+  },
+  "__v": 0
+}]

@@ -2,11 +2,14 @@ const mqtt = require('mqtt');
 require('dotenv').config();
 const deviceCredentials = require('./config/device-creds.json');
 const fs = require('fs');
+const DeviceLoader = require('./load-devices');
 
 class DeviceSimulator {
   constructor() {
     this.mqttClient = null;
-    this.devices = ['HEX001', 'HEX002', 'HEX003', 'HEX004', 'HEX005'];
+    this.deviceLoader = new DeviceLoader();
+    this.devices = [];
+    this.deviceModelMap = new Map();
     this.simulationActive = false;
     this.intervals = new Map();
     this.messageCounters = new Map();
@@ -25,18 +28,18 @@ class DeviceSimulator {
       connectTimeout: 30 * 1000,
     };
 
-    // Topic patterns for device-to-cloud events
+    // Topic patterns for device-to-cloud events (will be updated with correct modelSeries)
     this.topics = {
-      heartbeat: 'hexagon/hexa3000_pro/{deviceId}/heartbeat',
-      telemetry: 'hexagon/hexa3000_pro/{deviceId}/telemetry',
-      error: 'hexagon/hexa3000_pro/{deviceId}/error',
-      acknowledgment: 'hexagon/hexa3000_pro/{deviceId}/acknowledgment'
+      heartbeat: 'hexagon/{modelSeries}/{deviceId}/heartbeat',
+      telemetry: 'hexagon/{modelSeries}/{deviceId}/telemetry',
+      error: 'hexagon/{modelSeries}/{deviceId}/error',
+      acknowledgment: 'hexagon/{modelSeries}/{deviceId}/acknowledgment'
     };
 
     // Cloud-to-device topics (for subscription only)
     this.cloudTopics = {
-      command: 'hexagon/hexa3000_pro/{deviceId}/command',
-      configuration: 'hexagon/hexa3000_pro/{deviceId}/configuration'
+      command: 'hexagon/{modelSeries}/{deviceId}/command',
+      configuration: 'hexagon/{modelSeries}/{deviceId}/configuration'
     };
   }
 
@@ -44,11 +47,22 @@ class DeviceSimulator {
     try {
       console.log('🚀 Initializing Hexagon Device Simulator...');
       
+      // Load real device data
+      const deviceData = this.deviceLoader.loadData();
+      this.devices = deviceData.devices;
+      this.deviceModelMap = deviceData.deviceModelMap;
+      
       // Connect to MQTT
       await this.connectMQTT();
       
       console.log('✅ Device Simulator initialized successfully');
-      console.log(`📱 Simulating ${this.devices.length} devices: ${this.devices.join(', ')}`);
+      console.log(`📱 Simulating ${this.devices.length} real devices: ${this.devices.join(', ')}`);
+      
+      // Display device-model mapping
+      console.log('🔗 Device-Model Mapping:');
+      this.deviceModelMap.forEach((modelSeries, deviceId) => {
+        console.log(`   ${deviceId} → ${modelSeries}`);
+      });
       
     } catch (error) {
       console.error('❌ Failed to initialize simulator:', error);
@@ -86,8 +100,9 @@ class DeviceSimulator {
 
   subscribeToCloudTopics() {
     this.devices.forEach(deviceId => {
-      const commandTopic = this.cloudTopics.command.replace('{deviceId}', deviceId);
-      const configTopic = this.cloudTopics.configuration.replace('{deviceId}', deviceId);
+      const modelSeries = this.deviceModelMap.get(deviceId) || 'hexa_3000pro';
+      const commandTopic = this.cloudTopics.command.replace('{modelSeries}', modelSeries).replace('{deviceId}', deviceId);
+      const configTopic = this.cloudTopics.configuration.replace('{modelSeries}', modelSeries).replace('{deviceId}', deviceId);
       
       [commandTopic, configTopic].forEach(topic => {
         this.mqttClient.subscribe(topic, (err) => {
@@ -134,11 +149,14 @@ class DeviceSimulator {
       // Simulate command processing delay
       await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
       
+      // Get correct modelSeries for this device
+      const modelSeries = this.deviceModelMap.get(deviceId) || 'hexa_3000pro';
+      
       // Generate acknowledgment based on schema
       const acknowledgment = {
         timestamp: new Date(),
         deviceId: deviceId,
-        modelSeries: 'HEXAGON_PRO',
+        modelSeries: modelSeries,
         reference_id: commandData.command_id || `cmd_${Date.now()}`,
         reference_type: 'command',
         status: Math.random() > 0.1 ? 'completed' : 'failed',
@@ -165,11 +183,14 @@ class DeviceSimulator {
       // Simulate configuration processing delay
       await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 200));
       
+      // Get correct modelSeries for this device
+      const modelSeries = this.deviceModelMap.get(deviceId) || 'hexa_3000pro';
+      
       // Generate acknowledgment based on schema
       const acknowledgment = {
         timestamp: new Date(),
         deviceId: deviceId,
-        modelSeries: 'HEXAGON_PRO',
+        modelSeries: modelSeries,
         reference_id: configData.config_id || `config_${Date.now()}`,
         reference_type: 'configuration',
         status: Math.random() > 0.05 ? 'completed' : 'failed',
@@ -195,7 +216,8 @@ class DeviceSimulator {
       return;
     }
 
-    const topic = this.topics[messageType].replace('{deviceId}', deviceId);
+    const modelSeries = this.deviceModelMap.get(deviceId) || 'hexa_3000pro';
+    const topic = this.topics[messageType].replace('{modelSeries}', modelSeries).replace('{deviceId}', deviceId);
     const message = JSON.stringify(data);
     
     this.mqttClient.publish(topic, message, { qos: 1 }, (err) => {
@@ -206,17 +228,19 @@ class DeviceSimulator {
         if (counter) {
           counter[messageType]++;
         }
-        console.log(`📤 Published ${messageType} for ${deviceId} (${counter?.[messageType] || 0} total)`);
+        console.log(`📤 Published ${messageType} for ${deviceId} (${modelSeries}) (${counter?.[messageType] || 0} total)`);
       }
     });
   }
 
   // Generate heartbeat message based on schema
   generateHeartbeat(deviceId) {
+    const modelSeries = this.deviceModelMap.get(deviceId) || 'hexa_3000pro';
+    
     return {
       timestamp: new Date(),
       deviceId: deviceId,
-      modelSeries: 'HEXAGON_PRO',
+      modelSeries: modelSeries,
       device_status: ['online', 'online', 'online', 'maintenance'][Math.floor(Math.random() * 4)],
       network: {
         signal_strength: Math.floor(Math.random() * 40) - 100, // -60 to -100 dBm
@@ -232,10 +256,12 @@ class DeviceSimulator {
 
   // Generate telemetry message based on schema
   generateTelemetry(deviceId) {
+    const modelSeries = this.deviceModelMap.get(deviceId) || 'hexa_3000pro';
+    
     return {
       timestamp: new Date(),
       deviceId: deviceId,
-      modelSeries: 'HEXAGON_PRO',
+      modelSeries: modelSeries,
       serial_no: `SN${deviceId}${Math.floor(Math.random() * 10000)}`,
       set_liters: (Math.floor(Math.random() * 20) + 1).toString(),
       remaining_litters: (Math.floor(Math.random() * 20) + 1).toString(),
@@ -245,6 +271,7 @@ class DeviceSimulator {
 
   // Generate error message based on schema
   generateError(deviceId) {
+    const modelSeries = this.deviceModelMap.get(deviceId) || 'hexa_3000pro';
     const errorCodes = ['E001', 'E002', 'E003', 'E004', 'E005'];
     const severities = ['low', 'medium', 'high', 'critical'];
     const messages = [
@@ -258,7 +285,7 @@ class DeviceSimulator {
     return {
       timestamp: new Date(),
       deviceId: deviceId,
-      modelSeries: 'HEXAGON_PRO',
+      modelSeries: modelSeries,
       error_code: errorCodes[Math.floor(Math.random() * errorCodes.length)],
       severity: severities[Math.floor(Math.random() * severities.length)],
       message: messages[Math.floor(Math.random() * messages.length)]

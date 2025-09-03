@@ -104,6 +104,9 @@ npm run simulator:dev
 ```
 ├── app.js                    # Main application file
 ├── device-simulator.js       # Device simulator with MQTT publisher/subscriber
+├── load-devices.js          # Device loader for real MongoDB data
+├── hexagon_smart.machines.json      # Real machine data from MongoDB
+├── hexagon_smart.machinemodels.json # Real machine model data from MongoDB
 ├── models/                   # Schema models for reference
 │   ├── index.js             # Model exports
 │   ├── machine.js           # Machine model
@@ -132,13 +135,16 @@ The device simulator (`device-simulator.js`) provides:
 - **Telemetry**: Every 2 minutes with water levels and location data  
 - **Errors**: Random errors (5% chance every 5 minutes)
 - **Acknowledgments**: Automatic responses to received commands and configurations
+- **Real Device Data**: Uses actual device IDs and modelSeries from MongoDB collections
 
 #### Cloud-to-Device Subscription
 - **Command Subscription**: Listens for commands and responds with acknowledgments
 - **Configuration Subscription**: Listens for configuration updates and responds with acknowledgments
 
-#### Simple Device Management
-- Simulates 5 devices (HEX001-HEX005)
+#### Real Device Management
+- Loads real devices from MongoDB collections (8 devices: 12345-12347, 23456-23457, 34567-34569)
+- Maps each device to correct modelSeries (hexa_3000pro, hexa_9000ultra, hexa_450prime)
+- Uses correct topic patterns with modelSeries for each device
 - Message counters and status tracking
 - Graceful shutdown handling
 

@@ -1,0 +1,54 @@
+[{
+  "_id": {
+    "$oid": "68b74580fe2e6e4859943f58"
+  },
+  "name": "HEXA 3000PRO",
+  "category": "hydrogen-ionizer",
+  "price": 2999,
+  "status": true,
+  "description": "Advanced hydrogen water ionizer with cutting-edge technology for superior water quality",
+  "alias": "hexa_3000pro",
+  "createdAt": {
+    "$date": "2025-09-02T19:29:04.377Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:29:04.377Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b745ccfe2e6e4859943f5c"
+  },
+  "name": "HEXA 9000ULTRA",
+  "category": "premium-ionizer",
+  "price": 4999,
+  "status": true,
+  "description": "Ultra-premium hydrogen water ionizer with advanced features and superior performance",
+  "alias": "hexa_9000ultra",
+  "createdAt": {
+    "$date": "2025-09-02T19:30:20.042Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:30:20.042Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b745fcfe2e6e4859943f5e"
+  },
+  "name": "HEXA 450PRIME",
+  "category": "water-dispenser",
+  "price": 1499,
+  "status": true,
+  "description": "Premium water dispenser with advanced filtration and dispensing technology",
+  "alias": "hexa_450prime",
+  "createdAt": {
+    "$date": "2025-09-02T19:31:08.658Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-02T19:31:08.658Z"
+  },
+  "__v": 0
+}]
